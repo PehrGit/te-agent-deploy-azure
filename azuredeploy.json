@@ -70,8 +70,8 @@
     "storageAccountName":  "[concat(variables('vmId'), 'san')]",
     "vmName":              "[concat(parameters('agentName'), '-VM')]",
     "virtualNetworkName":  "[concat(parameters('agentName'), '-VNET')]",
-    "nicName":             "[concat(parameters('agentName'), '-VMNic')]",
-    "publicIPAddressName": "[concat(parameters('agentName'), '-pubIP')]",
+    "nicName":             "[concat(parameters('agentName'), '-VMNIC')]",
+    "publicIPAddressName": "[concat(parameters('agentName'), '-PUBIP')]",
     "dnsLabelPrefix":      "[variables('vmHostName')]",
 
     "vmSize": "Standard_D1",
@@ -244,7 +244,7 @@
 
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'),'/install-enterprise-agent-script')]",
+      "name": "[concat(variables('vmName'),'/install-enterprise-agent')]",
       "apiVersion": "2015-05-01-preview",
       "location": "[resourceGroup().location]",
       "dependsOn": [

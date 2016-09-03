@@ -1,9 +1,40 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+
+
+
   "parameters": {
+
+    "agentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of you new Enterprise Agent. Will be used for the hostname of the agent. Same syntax as subdomain component, min 3 and max 18 characters.",
+        "minLength": "3",
+        "maxLength": "18"
+      }
+    },
+
+    "accountGroupToken": {
+      "type": "string",
+      "metadata": {
+        "description": "Account Group Token for your new Enterprise Agent. Retrieve it under 'Add New Agent' page in ThousandEyes: https://app.thousandeyes.com/agent/enterprise/?s=1",
+        "minLength": "1",
+        "maxLength": "32"
+      }
+    },
+
+    "enableBrowserBot": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or disable Browser Bot agent compoment? Needed for PageLoad and Transaction tests."
+      }
+    },
+
     "adminUsername": {
       "type": "string",
+      "defaultValue": "teadmin",
       "metadata": {
         "description": "User name for the Virtual Machine."
       }
@@ -39,17 +70,18 @@
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
     "OSDiskName": "osdiskforlinuxsimple",
-    "nicName": "thousandeyes-agent-VMNic",
+    "nicName": "[concat(parameters('agentName'), '-VMNic')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
     "storageAccountType": "Standard_LRS",
-    "publicIPAddressName": "thousandeyes-agent-publicIP",
+    "publicIPAddressName": "[concat(parameters('agentName'), '-pubIP')]",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountContainerName": "vhds",
-    "vmName": "thousandeyes-agent-vm",
+    "vmHostName": "[concat(parameters('agentName'), '')]",
+    "vmName": "[concat(parameters('agentName'), '-VM')]",
     "vmSize": "Standard_D1",
-    "virtualNetworkName": "thousandeyes-agent-VNET",
+    "virtualNetworkName": "[concat(parameters('agentName'), '-VNET')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
     "apiVersion": "2015-06-15"
@@ -140,7 +172,7 @@
           "vmSize": "[variables('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('vmName')]",
+          "computerName": "[variables('vmHostName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -188,7 +220,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'),'/newuserscript')]",
+      "name": "[concat(variables('vmName'),'/install-enterprise-agent-script')]",
       "apiVersion": "2015-05-01-preview",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -203,7 +235,7 @@
           "fileUris": [
             "[concat(variables('deployUrlBase'), '/', 'install-enterprise-agent.sh')]"
           ],
-          "commandToExecute": "[concat('bash install-enterprise-agent.sh ', variables('deployUrlBase'))]"
+          "commandToExecute": "[concat('bash install-enterprise-agent.sh ', parameters('accountGroupToken'), ' ', parameters('enableBrowserBot'))]"
         }
       }
     }

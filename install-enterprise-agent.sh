@@ -5,6 +5,12 @@
 ### Args
 #
 ACCOUNT_GROUP_TOKEN="$1"
+ENABLE_BROWSER_BOT_ARG=`echo "$2" | tr '[:upper:]' '[:lower:]'`
+if [ "$ENABLE_BROWSER_BOT_ARG" == "true" ]; then
+    ENABLE_BROWSER_BOT_FLAG="-b"
+else
+    ENABLE_BROWSER_BOT_FLAG=""
+fi
 
 
 
@@ -20,4 +26,5 @@ ACCOUNT_GROUP_TOKEN="$1"
 curl -Os https://downloads.thousandeyes.com/agent/install_thousandeyes.sh
 chmod +x install_thousandeyes.sh
 echo "$ACCOUNT_GROUP_TOKEN" > /token.txt
-#./install_thousandeyes.sh -f -b $ACCT_GROUP_TOKEN
+echo "$ENABLE_BROWSER_BOT_FLAG" > /enable_browser_bot.txt
+#./install_thousandeyes.sh -f   $ENABLE_BROWSER_BOT_FLAG   $ACCOUNT_GROUP_TOKEN

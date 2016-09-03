@@ -19,7 +19,7 @@
       "type": "string",
       "metadata": {
         "description": "Account Group Token for your new Enterprise Agent. Retrieve it under 'Add New Agent' page in ThousandEyes: https://app.thousandeyes.com/agent/enterprise/?s=1",
-        "minLength": "1",
+        "minLength": "32",
         "maxLength": "32"
       }
     },
@@ -34,23 +34,16 @@
 
     "adminUsername": {
       "type": "string",
-      "defaultValue": "teadmin",
       "metadata": {
-        "description": "User name for the Virtual Machine."
+        "description": "User name for the Virtual Machine.",
+        "minLength": "1"
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine."
-      }
-    },
-
-    "deployUrlPrefix": {
-      "type": "string",
-      "defaultValue": "https://www.a2o.si/tmp/te/ea-azure",
-      "metadata": {
-        "description": "URL prefix for retrieval of additional resources needed for deployment."
+        "description": "Password for the Virtual Machine. 8 characters or more.",
+        "minLength": "8"
       }
     },
 
@@ -71,7 +64,6 @@
 
   "variables": {
     "apiVersion": "2015-06-15",
-    "deployUrlBase": "[parameters('deployUrlPrefix')]",
 
     "vmHostName":          "[parameters('agentName')]",
     "vmId":                "[toLower(replace(replace(parameters('agentName'), '-', ''), '_', ''))]",
@@ -265,7 +257,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[concat(variables('deployUrlBase'), '/', 'install-enterprise-agent.sh')]"
+            "[uri(deployment().properties.templateLink.uri, 'install-enterprise-agent.sh')]"
           ],
           "commandToExecute": "[concat('bash install-enterprise-agent.sh ', parameters('accountGroupToken'), ' ', parameters('enableBrowserBot'))]"
         }

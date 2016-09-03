@@ -46,10 +46,11 @@
       }
     },
 
-    "dnsLabelPrefix": {
+    "deployUrlPrefix": {
       "type": "string",
+      "defaultValue": "https://www.a2o.si/tmp/te/ea-azure",
       "metadata": {
-        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+        "description": "URL prefix for retrieval of additional resources needed for deployment."
       }
     },
 
@@ -69,27 +70,34 @@
 
 
   "variables": {
-    "deployUrlBase": "https://www.a2o.si/tmp/te/ea-azure",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
-    "dataDisk1VhdName": "datadisk1",
+    "apiVersion": "2015-06-15",
+    "deployUrlBase": "[parameters('deployUrlPrefix')]",
+
+    "vmHostName":          "[parameters('agentName')]",
+    "vmId":                "[toLower(replace(replace(parameters('agentName'), '-', ''), '_', ''))]",
+    "storageAccountName":  "[concat(variables('vmId'), 'san')]",
+    "vmName":              "[concat(parameters('agentName'), '-VM')]",
+    "virtualNetworkName":  "[concat(parameters('agentName'), '-VNET')]",
+    "nicName":             "[concat(parameters('agentName'), '-VMNic')]",
+    "publicIPAddressName": "[concat(parameters('agentName'), '-pubIP')]",
+    "dnsLabelPrefix":      "[variables('vmHostName')]",
+
+    "vmSize": "Standard_D1",
+
     "imagePublisher": "Canonical",
-    "imageOffer": "UbuntuServer",
-    "OSDiskName": "osdiskforlinuxsimple",
-    "nicName": "[concat(parameters('agentName'), '-VMNic')]",
+    "imageOffer":     "UbuntuServer",
+
+    "OSDiskName":                    "osdiskforlinuxsimple",
+    "dataDisk1VhdName":              "datadisk1",
+    "storageAccountType":            "Standard_LRS",
+    "vmStorageAccountContainerName": "vhds",
+
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
-    "storageAccountType": "Standard_LRS",
-    "publicIPAddressName": "[concat(parameters('agentName'), '-pubIP')]",
     "publicIPAddressType": "Dynamic",
-    "vmStorageAccountContainerName": "vhds",
-    "vmHostName": "[concat(parameters('agentName'), '')]",
-    "vmName": "[concat(parameters('agentName'), '-VM')]",
-    "vmSize": "Standard_D1",
-    "virtualNetworkName": "[concat(parameters('agentName'), '-VNET')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "apiVersion": "2015-06-15"
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]"
   },
 
 
@@ -119,7 +127,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+          "domainNameLabel": "[variables('dnsLabelPrefix')]"
         }
       }
     },

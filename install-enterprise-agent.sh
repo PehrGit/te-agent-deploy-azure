@@ -16,8 +16,8 @@ fi
 
 #### Just in case
 #
-#apt-get -y update
-#apt-get -y upgrade
+apt-get -y update
+apt-get -y upgrade
 
 
 
@@ -25,6 +25,4 @@ fi
 #
 curl -Os https://downloads.thousandeyes.com/agent/install_thousandeyes.sh
 chmod +x install_thousandeyes.sh
-echo "$ACCOUNT_GROUP_TOKEN" > /token.txt
-echo "$ENABLE_BROWSER_BOT_FLAG" > /enable_browser_bot.txt
-#./install_thousandeyes.sh -f   $ENABLE_BROWSER_BOT_FLAG   $ACCOUNT_GROUP_TOKEN
+./install_thousandeyes.sh   -f   $ENABLE_BROWSER_BOT_FLAG   $ACCOUNT_GROUP_TOKEN

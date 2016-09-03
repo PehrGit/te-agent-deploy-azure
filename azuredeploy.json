@@ -45,12 +45,14 @@
         "description": "Password for the Virtual Machine."
       }
     },
+
     "dnsLabelPrefix": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
       }
     },
+
     "ubuntuOSVersion": {
       "type": "string",
       "defaultValue": "16.04.0-LTS",
@@ -63,6 +65,9 @@
       }
     }
   },
+
+
+
   "variables": {
     "deployUrlBase": "https://www.a2o.si/tmp/te/ea-azure",
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
@@ -86,7 +91,11 @@
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
     "apiVersion": "2015-06-15"
   },
+
+
+
   "resources": [
+
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
@@ -99,6 +108,9 @@
       "properties": {
       }
     },
+
+
+
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -111,6 +123,9 @@
         }
       }
     },
+
+
+
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Network/virtualNetworks",
@@ -132,6 +147,9 @@
         ]
       }
     },
+
+
+
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -158,6 +176,9 @@
         ]
       }
     },
+
+
+
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
@@ -218,6 +239,9 @@
         }
       }
     },
+
+
+
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'),'/install-enterprise-agent-script')]",

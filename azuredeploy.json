@@ -33,6 +33,7 @@
     }
   },
   "variables": {
+    "deployUrlBase": "https://www.a2o.si/tmp/te/ea-azure",
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
     "dataDisk1VhdName": "datadisk1",
     "imagePublisher": "Canonical",
@@ -184,16 +185,27 @@
           }
         }
       }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'),'/newuserscript')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[concat(variables('deployUrlBase'), '/', 'install-enterprise-agent.sh')]"
+          ],
+          "commandToExecute": "[concat('bash install-enterprise-agent.sh ', variables('deployUrlBase'))]"
+        }
+      }
     }
-  ],
-  "outputs": {
-     "hostname": {
-         "type": "string",
-         "value": "[concat(parameters('dnsLabelPrefix'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
-     },
-    "sshCommand": {
-      "type": "string",
-      "value": "[concat('ssh ', parameters('adminUsername'), '@', parameters('dnsLabelPrefix'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
-    } 
-  }
+  ]
 }

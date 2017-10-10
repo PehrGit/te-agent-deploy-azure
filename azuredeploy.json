@@ -39,11 +39,10 @@
         "minLength": "1"
       }
     },
-    "adminPassword": {
-      "type": "securestring",
+    "sshKeyData": {
+      "type": "string",
       "metadata": {
-        "description": "Password for the Virtual Machine. 8 characters or more.",
-        "minLength": "8"
+        "description": "SSH rsa public key file as a string."
       }
     },
 
@@ -72,6 +71,8 @@
     "nicName":             "[concat(parameters('agentName'), '-VMNIC')]",
     "publicIPAddressName": "[concat(parameters('agentName'), '-PUBIP')]",
     "dnsLabelPrefix":      "[variables('vmHostName')]",
+
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
 
     "vmSize": "Standard_D1",
 
@@ -194,7 +195,17 @@
         "osProfile": {
           "computerName": "[variables('vmHostName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('sshKeyData')]"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "imageReference": {
